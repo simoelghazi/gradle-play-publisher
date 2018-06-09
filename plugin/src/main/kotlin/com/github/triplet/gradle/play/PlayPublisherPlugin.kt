@@ -2,6 +2,7 @@ package com.github.triplet.gradle.play
 
 import com.android.build.gradle.AppExtension
 import com.android.build.gradle.api.ApplicationVariant
+import com.android.build.gradle.internal.api.DefaultAndroidSourceDirectorySet
 import com.github.triplet.gradle.play.internal.ACCOUNT_CONFIG
 import com.github.triplet.gradle.play.internal.AccountConfig
 import com.github.triplet.gradle.play.internal.PLAY_PATH
@@ -43,7 +44,7 @@ class PlayPublisherPlugin : Plugin<Project> {
                 "Uploads all Play Store metadata for every variant."
         )
 
-        project.initPlayAccountConfigs(android)
+        project.initExtras(android)
         android.applicationVariants.whenObjectAdded { variant ->
             if (variant.buildType.isDebuggable) {
                 project.logger.info("Skipping debuggable build type ${variant.buildType.name}.")
@@ -132,12 +133,15 @@ class PlayPublisherPlugin : Plugin<Project> {
         }
     }
 
-    private fun Project.initPlayAccountConfigs(android: AppExtension) {
+    private fun Project.initExtras(android: AppExtension) {
         (android as ExtensionAware).extensions.add(
                 "playAccountConfigs", container(PlayAccountConfigExtension::class.java))
         android.defaultConfig[ACCOUNT_CONFIG] = null
         android.productFlavors.whenObjectAdded {
             it[ACCOUNT_CONFIG] = android.defaultConfig[ACCOUNT_CONFIG]
+        }
+        android.sourceSets.whenObjectAdded {
+            it[PLAY_PATH] = DefaultAndroidSourceDirectorySet(PLAY_PATH, project)
         }
     }
 

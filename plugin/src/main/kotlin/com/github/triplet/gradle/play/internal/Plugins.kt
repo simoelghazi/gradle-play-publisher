@@ -1,5 +1,6 @@
 package com.github.triplet.gradle.play.internal
 
+import com.android.build.gradle.api.AndroidSourceSet
 import com.android.build.gradle.api.BaseVariant
 import com.android.builder.model.ProductFlavor
 import org.gradle.api.Project
@@ -13,6 +14,9 @@ internal val BaseVariant.flavorNameOrDefault get() = flavorName.nullOrFull() ?: 
 internal val BaseVariant.playPath get() = "$RESOURCES_OUTPUT_PATH/$name"
 
 private val ProductFlavor.extras
+    get() = requireNotNull((this as ExtensionAware).extensions.get<ExtraPropertiesExtension>())
+
+private val AndroidSourceSet.extras
     get() = requireNotNull((this as ExtensionAware).extensions.get<ExtraPropertiesExtension>())
 
 internal inline fun <reified T> ExtensionContainer.get() = findByType(T::class.java)
@@ -31,5 +35,11 @@ internal inline fun <reified T : Task> Project.newTask(
 internal operator fun ProductFlavor.get(name: String) = extras[name]
 
 internal operator fun ProductFlavor.set(name: String, value: Any?) {
+    extras[name] = value
+}
+
+internal operator fun AndroidSourceSet.get(name: String) = extras[name]
+
+internal operator fun AndroidSourceSet.set(name: String, value: Any?) {
     extras[name] = value
 }

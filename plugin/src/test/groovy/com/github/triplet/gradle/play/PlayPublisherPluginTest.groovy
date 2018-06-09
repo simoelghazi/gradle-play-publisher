@@ -10,7 +10,9 @@ import org.junit.Test
 
 import static DependsOn.dependsOn
 import static org.junit.Assert.assertEquals
+import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertNotNull
+import static org.junit.Assert.assertNull
 import static org.junit.Assert.assertThat
 import static org.junit.Assert.assertTrue
 import static org.junit.Assert.fail
@@ -525,5 +527,61 @@ class PlayPublisherPluginTest {
         assertThat(project.tasks.assembleRelease, dependsOn('assembleMipsRelease'))
 
         assertThat(project.tasks.publishApkRelease, dependsOn('assembleRelease'))
+    }
+
+    @Test
+    void testPlaySourceSet() {
+        def project = TestHelper.evaluatableProject()
+
+        project.android {
+            playAccountConfigs {
+                defaultAccountConfig {
+                    serviceAccountEmail = 'default@exmaple.com'
+                    pk12File = project.file('first-secret.pk12')
+                }
+            }
+
+            defaultConfig {
+                playAccountConfig = playAccountConfigs.defaultAccountConfig
+            }
+
+            flavorDimensions "mode", "variant"
+
+            productFlavors {
+                demo {
+                    dimension = "mode"
+                }
+                production {
+                    dimension = "mode"
+                }
+                free {
+                    dimension = "variant"
+                }
+                paid {
+                    dimension = "variant"
+                }
+            }
+
+            sourceSets {
+                demo {
+                    play.srcDir('playShared')
+                }
+                productionPaid {
+                    play.srcDir('playShared')
+                }
+            }
+        }
+        project.evaluate()
+
+        def playShared = project.file('playShared')
+        assertTrue(project.android.sourceSets.demo.play.srcDirs.contains(playShared))
+        assertFalse(project.android.sourceSets.production.play.srcDirs.contains(playShared))
+        assertTrue(project.android.sourceSets.productionPaid.play.srcDirs.contains(playShared))
+
+        def freeVariant = project.android.applicationVariants.find { it.name == 'productionFreeDebug' }
+        assertNull(freeVariant.sourceSets.find { it.ext.has('play') && it.play.srcDirs.contains(playShared) })
+
+        def paidVariant = project.android.applicationVariants.find { it.name == 'productionPaidDebug' }
+        assertNotNull(paidVariant.sourceSets.find { it.ext.has('play') && it.play.srcDirs.contains(playShared) })
     }
 }
