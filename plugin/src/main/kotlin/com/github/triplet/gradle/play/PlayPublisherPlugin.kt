@@ -1,6 +1,7 @@
 package com.github.triplet.gradle.play
 
 import com.android.build.gradle.AppExtension
+import com.android.build.gradle.api.AndroidSourceDirectorySet
 import com.android.build.gradle.api.ApplicationVariant
 import com.android.build.gradle.internal.api.DefaultAndroidSourceDirectorySet
 import com.github.triplet.gradle.play.internal.ACCOUNT_CONFIG
@@ -13,7 +14,11 @@ import com.github.triplet.gradle.play.internal.newTask
 import com.github.triplet.gradle.play.internal.playPath
 import com.github.triplet.gradle.play.internal.set
 import com.github.triplet.gradle.play.internal.validate
+import groovy.lang.DelegatingMetaClass
 import groovy.lang.GroovyObject
+import groovy.lang.MetaClass
+import org.codehaus.groovy.runtime.InvokerHelper
+import org.codehaus.groovy.runtime.MetaClassHelper
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -141,7 +146,29 @@ class PlayPublisherPlugin : Plugin<Project> {
             it[ACCOUNT_CONFIG] = android.defaultConfig[ACCOUNT_CONFIG]
         }
         android.sourceSets.whenObjectAdded {
-            it[PLAY_PATH] = DefaultAndroidSourceDirectorySet(PLAY_PATH, project)
+            val sourceDirectorySet = DefaultAndroidSourceDirectorySet(PLAY_PATH, project)
+            it[PLAY_PATH] = sourceDirectorySet
+
+            val metaClass = MyAndroidSourceSetMetaClass(InvokerHelper.getMetaClass(it), sourceDirectorySet)
+            metaClass.initialize()
+            MetaClassHelper.doSetMetaClass(it, metaClass)
+        }
+
+        /*
+        val metaClass = InvokerHelper.getMetaClass(DefaultAndroidSourceSet::class.java)
+        val originalMethod = metaClass.getMetaMethod("setRoot", arrayOf(String::class.java))
+        //metaClass.metaMethods.remove(originalMethod)
+        //metaClass.metaMethods.add(ClosureMetaMethod)
+        project.logger.error("$originalMethod")
+        */
+    }
+
+    private class MyAndroidSourceSetMetaClass(metaClass: MetaClass, private val sourceDirectorySet: AndroidSourceDirectorySet) : DelegatingMetaClass(metaClass) {
+        override fun invokeMethod(`object`: Any?, methodName: String?, arguments: Array<out Any>?): Any {
+            if (methodName == "setRoot") {
+                sourceDirectorySet.setSrcDirs(listOf("${arguments?.get(0)}/$PLAY_PATH"))
+            }
+            return super.invokeMethod(`object`, methodName, arguments)
         }
     }
 

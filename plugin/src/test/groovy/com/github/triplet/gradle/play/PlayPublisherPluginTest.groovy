@@ -564,7 +564,7 @@ class PlayPublisherPluginTest {
 
             sourceSets {
                 demo {
-                    play.srcDir('playShared')
+                    setRoot('shared')
                 }
                 productionPaid {
                     play.srcDir('playShared')
@@ -573,14 +573,21 @@ class PlayPublisherPluginTest {
         }
         project.evaluate()
 
+        // Check if setRoot is functional – WIP
+        //def sharedPlay = project.file('shared/play')
+        //assertTrue(project.android.sourceSets.demo.play.srcDirs.contains(sharedPlay))
+        //assertFalse(project.android.sourceSets.production.play.srcDirs.contains(sharedPlay))
+
+        // Check if play.srcDir is functional
         def playShared = project.file('playShared')
-        assertTrue(project.android.sourceSets.demo.play.srcDirs.contains(playShared))
-        assertFalse(project.android.sourceSets.production.play.srcDirs.contains(playShared))
+        assertFalse(project.android.sourceSets.productionFree.play.srcDirs.contains(playShared))
         assertTrue(project.android.sourceSets.productionPaid.play.srcDirs.contains(playShared))
 
+        // Check if our play sourceDirectorySet is propagated to the variant
         def freeVariant = project.android.applicationVariants.find { it.name == 'productionFreeDebug' }
         assertNull(freeVariant.sourceSets.find { it.ext.has('play') && it.play.srcDirs.contains(playShared) })
 
+        // Check if our play sourceDirectorySet is propagated to the variant
         def paidVariant = project.android.applicationVariants.find { it.name == 'productionPaidDebug' }
         assertNotNull(paidVariant.sourceSets.find { it.ext.has('play') && it.play.srcDirs.contains(playShared) })
     }
