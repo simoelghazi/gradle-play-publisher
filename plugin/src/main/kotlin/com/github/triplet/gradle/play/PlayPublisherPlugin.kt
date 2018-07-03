@@ -5,9 +5,7 @@ import com.android.build.gradle.api.ApplicationVariant
 import com.android.build.gradle.internal.api.InstallableVariantImpl
 import com.github.triplet.gradle.play.internal.ACCOUNT_CONFIG
 import com.github.triplet.gradle.play.internal.AccountConfig
-import com.github.triplet.gradle.play.internal.LifecycleHelperTask
 import com.github.triplet.gradle.play.internal.PLAY_PATH
-import com.github.triplet.gradle.play.internal.PlayPublishTaskBase
 import com.github.triplet.gradle.play.internal.flavorNameOrDefault
 import com.github.triplet.gradle.play.internal.get
 import com.github.triplet.gradle.play.internal.newTask
@@ -20,6 +18,8 @@ import com.github.triplet.gradle.play.tasks.ProcessPackageMetadata
 import com.github.triplet.gradle.play.tasks.PublishApk
 import com.github.triplet.gradle.play.tasks.PublishBundle
 import com.github.triplet.gradle.play.tasks.PublishListing
+import com.github.triplet.gradle.play.tasks.internal.LifecycleHelperTask
+import com.github.triplet.gradle.play.tasks.internal.PlayPublishTaskBase
 import groovy.lang.GroovyObject
 import org.gradle.api.Plugin
 import org.gradle.api.Project

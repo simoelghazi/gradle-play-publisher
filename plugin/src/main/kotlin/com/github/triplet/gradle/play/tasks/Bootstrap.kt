@@ -4,10 +4,10 @@ import com.github.triplet.gradle.play.internal.AppDetail
 import com.github.triplet.gradle.play.internal.ImageType
 import com.github.triplet.gradle.play.internal.LISTINGS_PATH
 import com.github.triplet.gradle.play.internal.ListingDetail
-import com.github.triplet.gradle.play.internal.PlayPublishTaskBase
 import com.github.triplet.gradle.play.internal.RELEASE_NOTES_PATH
 import com.github.triplet.gradle.play.internal.nullOrFull
 import com.github.triplet.gradle.play.internal.safeCreateNewFile
+import com.github.triplet.gradle.play.tasks.internal.PlayPublishTaskBase
 import com.google.api.services.androidpublisher.AndroidPublisher
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.PathSensitive
