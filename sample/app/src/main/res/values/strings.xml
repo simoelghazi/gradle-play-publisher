@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name" translatable="false">Gradle Play Publisher - Sample</string>
+    <string name="logo" translatable="false">logo</string>
+    <string name="view_project_on_github">View Project on GitHub</string>
+</resources>
