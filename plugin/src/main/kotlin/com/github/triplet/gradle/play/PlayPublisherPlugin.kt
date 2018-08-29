@@ -12,6 +12,7 @@ import com.github.triplet.gradle.play.internal.newTask
 import com.github.triplet.gradle.play.internal.playPath
 import com.github.triplet.gradle.play.internal.set
 import com.github.triplet.gradle.play.internal.validate
+import com.github.triplet.gradle.play.internal.validateRuntime
 import com.github.triplet.gradle.play.tasks.Bootstrap
 import com.github.triplet.gradle.play.tasks.GenerateResources
 import com.github.triplet.gradle.play.tasks.ProcessPackageMetadata
@@ -31,6 +32,8 @@ import java.io.File
 
 class PlayPublisherPlugin : Plugin<Project> {
     override fun apply(project: Project) {
+        validateRuntime()
+
         val android = requireNotNull(project.extensions.get<AppExtension>()) {
             "The 'com.android.application' plugin is required."
         }
