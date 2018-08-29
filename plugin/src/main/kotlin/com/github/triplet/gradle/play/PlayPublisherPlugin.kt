@@ -7,6 +7,7 @@ import com.github.triplet.gradle.play.internal.ACCOUNT_CONFIG
 import com.github.triplet.gradle.play.internal.AccountConfig
 import com.github.triplet.gradle.play.internal.LifecycleHelperTask
 import com.github.triplet.gradle.play.internal.PLAY_PATH
+import com.github.triplet.gradle.play.internal.PRODUCTS_PATH
 import com.github.triplet.gradle.play.internal.PlayPublishTaskBase
 import com.github.triplet.gradle.play.internal.configure
 import com.github.triplet.gradle.play.internal.flavorNameOrDefault
@@ -23,6 +24,7 @@ import com.github.triplet.gradle.play.tasks.PromoteRelease
 import com.github.triplet.gradle.play.tasks.PublishApk
 import com.github.triplet.gradle.play.tasks.PublishBundle
 import com.github.triplet.gradle.play.tasks.PublishListing
+import com.github.triplet.gradle.play.tasks.PublishProducts
 import groovy.lang.GroovyObject
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -64,6 +66,10 @@ class PlayPublisherPlugin : Plugin<Project> {
         val publishListingAllTask = project.newTask<LifecycleHelperTask>(
                 "publishListing",
                 "Uploads all Play Store metadata for every variant."
+        ) { this.extension = extension }
+        val publishProductsAllTask = project.newTask<LifecycleHelperTask>(
+                "publishProducts",
+                "Uploads all Play Store in-app products for every variant."
         ) { this.extension = extension }
 
         project.initPlayAccountConfigs(android)
@@ -133,6 +139,17 @@ class PlayPublisherPlugin : Plugin<Project> {
                 }
             }
             publishListingAllTask.configure { dependsOn(publishListingTask) }
+
+            val publishProductsTask = project.newTask<PublishProducts>(
+                    "publish${variantName}Products",
+                    "Uploads all Play Store in-app products for $variantName."
+            ) {
+                init()
+                productsDir = File(playResourcesTask.resDir, PRODUCTS_PATH)
+
+                dependsOn(playResourcesTask)
+            }
+            publishProductsAllTask.configure { dependsOn(publishProductsTask) }
 
             val processPackageMetadata = project.newTask<ProcessPackageMetadata>(
                     "process${variantName}Metadata",
@@ -204,6 +221,7 @@ class PlayPublisherPlugin : Plugin<Project> {
                 dependsOn(
                         if (extension.defaultToAppBundles) publishBundleTask else publishApkTask)
                 dependsOn(publishListingTask)
+                dependsOn(publishProductsTask)
             }
             publishAllTask.configure { dependsOn(publishTask) }
         }
