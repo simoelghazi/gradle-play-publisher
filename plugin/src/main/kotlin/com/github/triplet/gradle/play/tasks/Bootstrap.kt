@@ -36,7 +36,7 @@ open class Bootstrap : PlayPublishTaskBase(), BootstrapOptions by BootstrapOptio
         progressLogger.start("Downloads resources for variant ${variant.name}", null)
 
         if (downloadAppDetails) bootstrapAppDetails(editId)
-        if (downloadListings) bootstrapListing(editId)
+        if (downloadListings) bootstrapListings(editId)
         if (downloadReleaseNotes) bootstrapReleaseNotes(editId)
         if (downloadProducts) bootstrapProducts()
 

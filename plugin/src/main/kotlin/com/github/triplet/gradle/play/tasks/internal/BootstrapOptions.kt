@@ -22,6 +22,10 @@ internal interface BootstrapOptions {
     @get:Internal
     @set:Option(option = "release-notes", description = "Download release notes for each language.")
     var downloadReleaseNotes: Boolean
+
+    @get:Internal
+    @set:Option(option = "products", description = "Download in-app purchases and subscriptions.")
+    var downloadProducts: Boolean
 }
 
 internal object BootstrapOptionsHolder : BootstrapOptions {
@@ -42,6 +46,11 @@ internal object BootstrapOptionsHolder : BootstrapOptions {
             onSet()
             field = value
         }
+    override var downloadProducts = true
+        set(value) {
+            onSet()
+            field = value
+        }
 
     /**
      * Since this is an object, it won't be destroyed across Gradle invocations. Therefore, we need
@@ -51,6 +60,7 @@ internal object BootstrapOptionsHolder : BootstrapOptions {
         downloadAppDetails = true
         downloadListings = true
         downloadReleaseNotes = true
+        downloadProducts = true
 
         // Must come after to override onSet
         isRequestingSpecificFeature.set(false)
@@ -67,6 +77,7 @@ internal object BootstrapOptionsHolder : BootstrapOptions {
             downloadAppDetails = false
             downloadListings = false
             downloadReleaseNotes = false
+            downloadProducts = false
         }
     }
 }
