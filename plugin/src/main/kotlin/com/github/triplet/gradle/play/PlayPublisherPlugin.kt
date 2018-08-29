@@ -145,7 +145,7 @@ class PlayPublisherPlugin : Plugin<Project> {
                     "Uploads all Play Store in-app products for $variantName."
             ) {
                 init()
-                productsDir = File(playResourcesTask.resDir, PRODUCTS_PATH)
+                productsDir = File(playResourcesTask.get().resDir, PRODUCTS_PATH)
 
                 dependsOn(playResourcesTask)
             }
