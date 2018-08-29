@@ -5,7 +5,6 @@ import com.android.build.gradle.api.ApplicationVariant
 import com.android.build.gradle.internal.api.InstallableVariantImpl
 import com.github.triplet.gradle.play.internal.ACCOUNT_CONFIG
 import com.github.triplet.gradle.play.internal.AccountConfig
-import com.github.triplet.gradle.play.internal.LifecycleHelperTask
 import com.github.triplet.gradle.play.internal.PLAY_PATH
 import com.github.triplet.gradle.play.internal.PRODUCTS_PATH
 import com.github.triplet.gradle.play.internal.PlayPublishTaskBase
@@ -43,7 +42,7 @@ class PlayPublisherPlugin : Plugin<Project> {
         val extension: PlayPublisherExtension =
                 project.extensions.create(PLAY_PATH, PlayPublisherExtension::class.java)
 
-        val bootstrapAllTask = project.newTask<LifecycleHelperTask>(
+        val bootstrapAllTask = project.newTask<BootstrapLifecycleHelperTask>(
                 "bootstrap",
                 "Downloads the Play Store listing metadata for all variants."
         ) { this.extension = extension }
@@ -73,6 +72,7 @@ class PlayPublisherPlugin : Plugin<Project> {
         ) { this.extension = extension }
 
         project.initPlayAccountConfigs(android)
+        BootstrapOptionsHolder.reset()
         android.applicationVariants.whenObjectAdded {
             if (buildType.isDebuggable) {
                 project.logger.info("Skipping debuggable build type ${buildType.name}.")

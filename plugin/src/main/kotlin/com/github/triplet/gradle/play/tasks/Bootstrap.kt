@@ -6,10 +6,12 @@ import com.github.triplet.gradle.play.internal.ImageType
 import com.github.triplet.gradle.play.internal.LISTINGS_PATH
 import com.github.triplet.gradle.play.internal.ListingDetail
 import com.github.triplet.gradle.play.internal.PRODUCTS_PATH
-import com.github.triplet.gradle.play.internal.PlayPublishTaskBase
 import com.github.triplet.gradle.play.internal.RELEASE_NOTES_PATH
 import com.github.triplet.gradle.play.internal.nullOrFull
 import com.github.triplet.gradle.play.internal.safeCreateNewFile
+import com.github.triplet.gradle.play.tasks.internal.BootstrapOptions
+import com.github.triplet.gradle.play.tasks.internal.BootstrapOptionsHolder
+import com.github.triplet.gradle.play.tasks.internal.PlayPublishTaskBase
 import com.google.api.client.json.jackson2.JacksonFactory
 import com.google.api.services.androidpublisher.AndroidPublisher
 import org.gradle.api.tasks.OutputDirectory
@@ -19,7 +21,7 @@ import org.gradle.api.tasks.TaskAction
 import java.io.File
 import java.net.URL
 
-open class Bootstrap : PlayPublishTaskBase() {
+open class Bootstrap : PlayPublishTaskBase(), BootstrapOptions by BootstrapOptionsHolder {
     @get:PathSensitive(PathSensitivity.RELATIVE)
     @get:OutputDirectory
     internal lateinit var srcDir: File
@@ -33,10 +35,10 @@ open class Bootstrap : PlayPublishTaskBase() {
     fun bootstrap() = read { editId ->
         progressLogger.start("Downloads resources for variant ${variant.name}", null)
 
-        bootstrapAppDetails(editId)
-        bootstrapListing(editId)
-        bootstrapReleaseNotes(editId)
-        bootstrapProducts()
+        if (downloadAppDetails) bootstrapAppDetails(editId)
+        if (downloadListings) bootstrapListing(editId)
+        if (downloadReleaseNotes) bootstrapReleaseNotes(editId)
+        if (downloadProducts) bootstrapProducts()
 
         progressLogger.completed()
     }
@@ -53,7 +55,7 @@ open class Bootstrap : PlayPublishTaskBase() {
         details.defaultLanguage.nullOrFull()?.write(AppDetail.DEFAULT_LANGUAGE)
     }
 
-    private fun AndroidPublisher.Edits.bootstrapListing(editId: String) {
+    private fun AndroidPublisher.Edits.bootstrapListings(editId: String) {
         progressLogger.progress("Fetching listings")
         val listings = listings()
                 .list(variant.applicationId, editId)
